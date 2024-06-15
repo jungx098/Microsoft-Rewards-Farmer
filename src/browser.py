@@ -1,6 +1,7 @@
 import contextlib
 import logging
 import random
+import uuid
 from pathlib import Path
 from typing import Any
 
@@ -178,10 +179,8 @@ class Browser:
         parent = currentPath.parent.parent
         sessionsDir = parent / "sessions"
 
-        # Concatenate username and browser type for a plain text session ID
-        sessionid = f"{self.username}"
-
-        sessionsDir = sessionsDir / sessionid
+        sessionUuid = uuid.uuid5(uuid.NAMESPACE_DNS, self.username)
+        sessionsDir = sessionsDir / str(sessionUuid) / self.browserType
         sessionsDir.mkdir(parents=True, exist_ok=True)
         return sessionsDir
 
