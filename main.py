@@ -225,7 +225,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
 
         if remainingSearches != 0:
             accountPointsCounter = Searches(desktopBrowser).bingSearches(
-                remainingSearches
+                remainingSearches, int(accountPointsCounter)
             )
 
         pause_after_search = random.uniform(
@@ -242,7 +242,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
             utils = mobileBrowser.utils
             accountPointsCounter = Login(mobileBrowser).login()
             accountPointsCounter = Searches(mobileBrowser).bingSearches(
-                remainingSearchesM
+                remainingSearchesM, int(accountPointsCounter)
             )
 
             utils.goHome()
