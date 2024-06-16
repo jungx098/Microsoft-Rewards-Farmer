@@ -67,22 +67,27 @@ class Searches:
             logging.info(f"[BING] {i}/{numberOfSearches}: {word}")
             points = self.bingSearch(word)
             if points <= pointsCounter:
-                maxRetry = 3
+                retryMax = 3
                 relatedTerms = self.getRelatedTerms(word)
-                for i in range(min(maxRetry, len(relatedTerms))):
-                    term = relatedTerms[i]
-                    logging.info(f"[BING] retry: {term}")
-                    logging.warning(
-                        "[BING] Possible blockage. Refreshing the page and try for related terms."
-                    )
+                for retry in range(min(retryMax, len(relatedTerms))):
+                    logging.warning("[BING] Possible blockage. Refreshing the page.")
                     self.webdriver.refresh()
+
+                    term = relatedTerms[retry]
+                    logging.info(f"[BING] retry {retry + 1}/{retryMax}: {term}")
                     points = self.bingSearch(term)
                     if not points <= pointsCounter:
                         break
-            if points > 0:
+            if points > pointsCounter:
                 pointsCounter = points
+            elif points == pointsCounter:
+                logging.warning(
+                    f"[BING] No point gained (current points: {pointsCounter})."
+                )
             else:
-                logging.warning("[BING] Zero point reported.")
+                logging.warning(
+                    f"[BING] Zero point returned (current points: {pointsCounter})."
+                )
                 break
 
         logging.info(
