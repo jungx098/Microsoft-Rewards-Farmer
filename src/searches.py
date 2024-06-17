@@ -57,6 +57,10 @@ class Searches:
         logging.info(
             f"[BING] Starting {self.browser.browserType.capitalize()} Edge Bing searches..."
         )
+        logging.info("[BING] Start points: %d", pointsCounter)
+        logging.info(
+            "[BING] Expected final points: %d", pointsCounter + numberOfSearches * 5
+        )
 
         search_terms = self.getGoogleTrends(numberOfSearches)
         self.webdriver.get("https://bing.com")
@@ -64,35 +68,51 @@ class Searches:
         i = 0
         for word in search_terms:
             i += 1
-            logging.info(f"[BING] {i}/{numberOfSearches}: {word}")
+            logging.info(
+                "[BING] %d/%d: %s (old points: %d)",
+                i,
+                numberOfSearches,
+                word,
+                pointsCounter,
+            )
             points = self.bingSearch(word)
             if points <= pointsCounter:
                 retryMax = 3
                 relatedTerms = self.getRelatedTerms(word)
                 for retry in range(min(retryMax, len(relatedTerms))):
-                    logging.warning("[BING] Possible blockage. Refreshing the page.")
+                    logging.warning(
+                        "[BING] Possible blockage. Refreshing the page. (points: %d)",
+                        points,
+                    )
                     self.webdriver.refresh()
 
                     term = relatedTerms[retry]
-                    logging.info(f"[BING] retry {retry + 1}/{retryMax}: {term}")
+                    logging.info(
+                        "[BING] retry %d/%d: %s (points: %d)",
+                        retry + 1,
+                        retryMax,
+                        term,
+                        points,
+                    )
                     points = self.bingSearch(term)
                     if not points <= pointsCounter:
                         break
             if points > pointsCounter:
                 pointsCounter = points
             elif points == pointsCounter:
-                logging.warning(
-                    f"[BING] No point gained (current points: {pointsCounter})."
-                )
+                logging.warning("[BING] No point gained (points: %d).", points)
             else:
                 logging.warning(
-                    f"[BING] Zero point returned (current points: {pointsCounter})."
+                    "[BING] Invalid point returned (points: %d).",
+                    points,
                 )
                 break
 
         logging.info(
             f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"
         )
+        logging.info("[BING] Final points: %d", pointsCounter)
+
         return pointsCounter
 
     def bingSearch(self, word: str):
