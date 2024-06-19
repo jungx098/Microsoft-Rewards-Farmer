@@ -14,15 +14,24 @@ from src.utils import Utils
 
 
 class Searches:
+    searchIdx = 0
+    searchMax = 200
+    searchTerms: list[str] = []
+
     def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
 
     def getGoogleTrends(self, wordsCount: int) -> list:
         # Function to retrieve Google Trends search terms
-        searchTerms: list[str] = []
+        Searches.searchMax = max(Searches.searchMax, wordsCount * 2)
+
+        if len(Searches.searchTerms) < Searches.searchIdx + wordsCount:
+            Searches.searchIdx = 0
+            Searches.searchTerms = []
+
         i = 0
-        while len(searchTerms) < wordsCount:
+        while len(Searches.searchTerms) < Searches.searchMax:
             i += 1
             # Fetching daily trends from Google Trends API
             r = requests.get(
@@ -32,14 +41,18 @@ class Searches:
             for topic in trends["default"]["trendingSearchesDays"][0][
                 "trendingSearches"
             ]:
-                searchTerms.append(topic["title"]["query"].lower())
-                searchTerms.extend(
+                Searches.searchTerms.append(topic["title"]["query"].lower())
+                Searches.searchTerms.extend(
                     relatedTopic["query"].lower()
                     for relatedTopic in topic["relatedQueries"]
                 )
-            searchTerms = list(set(searchTerms))
-        del searchTerms[wordsCount : (len(searchTerms) + 1)]
-        return searchTerms
+            Searches.searchTerms = list(set(Searches.searchTerms))
+
+        start = Searches.searchIdx
+        end = min(len(Searches.searchTerms), Searches.searchIdx + wordsCount)
+        Searches.searchIdx = end
+
+        return Searches.searchTerms[start:end]
 
     def getRelatedTerms(self, word: str) -> list:
         # Function to retrieve related terms from Bing API
@@ -58,25 +71,28 @@ class Searches:
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
         # Function to perform Bing searches
         logging.info(
-            f"[BING] Starting {self.browser.browserType.capitalize()} Edge Bing searches..."
-        )
-        logging.info("[BING] Start points: %d", pointsCounter)
-        logging.info(
-            "[BING] Expected final points: %d", pointsCounter + numberOfSearches * 5
+            "[BING] %s Search Start - Reward Count: %d Points: %d",
+            self.browser.browserType.capitalize(),
+            numberOfSearches,
+            pointsCounter,
         )
 
-        search_terms = self.getGoogleTrends(numberOfSearches)
+        # 3 more search counts to compensate potential reward failures.
+        search_terms = self.getGoogleTrends(numberOfSearches + 3)
         self.webdriver.get("https://bing.com")
 
         i = 0
-        for word in search_terms:
-            i += 1
+        reward_cnt = 0
+        while reward_cnt < numberOfSearches and i < len(search_terms):
+            word = search_terms[i]
+            i = i + 1
             logging.info(
-                "[BING] %d/%d: %s (old points: %d)",
+                "[BING] Iteration: %d/%d Progress: %d/%d Word: %s",
                 i,
+                len(search_terms),
+                reward_cnt,
                 numberOfSearches,
                 word,
-                pointsCounter,
             )
             points = self.bingSearch(word)
             if points <= pointsCounter:
@@ -84,14 +100,13 @@ class Searches:
                 retryMax = min(3, len(relatedTerms))
                 for retry in range(retryMax):
                     logging.warning(
-                        "[BING] Possible blockage. Refreshing the page. (points: %d)",
-                        points,
+                        "[BING] Possible blockage. Refreshing the page.",
                     )
                     self.webdriver.refresh()
 
                     term = relatedTerms[retry]
                     logging.info(
-                        "[BING] retry %d/%d: %s (points: %d)",
+                        "[BING] Retry: %d/%d Word: %s (points: %d)",
                         retry + 1,
                         retryMax,
                         term,
@@ -102,6 +117,7 @@ class Searches:
                         break
             if points > pointsCounter:
                 pointsCounter = points
+                reward_cnt += 1
             elif points == pointsCounter:
                 logging.warning("[BING] No point gained (points: %d).", points)
             else:
@@ -112,9 +128,14 @@ class Searches:
                 break
 
         logging.info(
-            f"[BING] Finished {self.browser.browserType.capitalize()} Edge Bing searches !"
+            "[BING] %s Search Done - Iteration: %d/%d Progress: %d/%d Points: %d",
+            self.browser.browserType.capitalize(),
+            i,
+            len(search_terms),
+            reward_cnt,
+            numberOfSearches,
+            pointsCounter,
         )
-        logging.info("[BING] Final points: %d", pointsCounter)
 
         return pointsCounter
 
