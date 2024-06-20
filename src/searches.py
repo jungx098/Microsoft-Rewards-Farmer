@@ -80,9 +80,9 @@ class Searches:
             )
             points = self.bingSearch(word)
             if points <= pointsCounter:
-                retryMax = 3
                 relatedTerms = self.getRelatedTerms(word)
-                for retry in range(min(retryMax, len(relatedTerms))):
+                retryMax = min(3, len(relatedTerms))
+                for retry in range(retryMax):
                     logging.warning(
                         "[BING] Possible blockage. Refreshing the page. (points: %d)",
                         points,
