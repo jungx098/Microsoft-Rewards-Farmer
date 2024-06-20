@@ -47,8 +47,11 @@ class Searches:
             r = requests.get(
                 f"https://api.bing.com/osjson.aspx?query={word}",
                 headers={"User-agent": self.browser.userAgent},
+                timeout=60,
             )
-            return r.json()[1]
+            result = set(r.json()[1])
+            result.discard(word)
+            return list(result)
         except Exception:  # pylint: disable=broad-except
             return []
 
