@@ -52,7 +52,11 @@ def main():
 
             logging.info(f"[POINTS] Data for '{account_name}' appended to the file.")
         except Exception as e:
-            Utils.send_notification("⚠️ Error occurred, please check the log", str(e))
+            Utils.send_notification(
+                "⚠️ Error occurred, please check the log",
+                str(e),
+                currentAccount.get("apprise"),
+            )
             logging.exception(f"{e.__class__.__name__}: {e}")
 
     # Save the current day's points data for the next day in the "logs" folder
@@ -177,7 +181,10 @@ def executeBot(currentAccount, args: argparse.Namespace):
     logging.info(
         f"********************{currentAccount.get('username', '')}********************"
     )
-    
+
+    usernameMasked = Utils.maskUsername(currentAccount.get("username"))
+    appriseUrls = currentAccount.get("apprise")
+
     accountPointsCounter = 0
     remainingSearches = 0
     remainingSearchesM = 0
@@ -188,10 +195,18 @@ def executeBot(currentAccount, args: argparse.Namespace):
         accountPointsCounter = Login(desktopBrowser).login()
         startingPoints = accountPointsCounter
         if startingPoints == "Locked":
-            Utils.send_notification("🚫 Account is Locked", currentAccount["username"])
+            Utils.send_notification(
+                "🚫 Account is Locked",
+                usernameMasked,
+                appriseUrls,
+            )
             return 0
         if startingPoints == "Verify":
-            Utils.send_notification("❗️ Account needs to be verified", currentAccount["username"])
+            Utils.send_notification(
+                "❗️ Account needs to be verified",
+                usernameMasked,
+                appriseUrls,
+            )
             return 0
         logging.info(
             f"[POINTS] You have {utils.formatNumber(accountPointsCounter)} points on your account"
@@ -246,7 +261,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
     goalNotifier = ""
     if goalPoints > 0:
         logging.info(
-            f"[POINTS] You are now at {(utils.formatNumber((accountPointsCounter / goalPoints) * 100))}% of your goal ({goalTitle}) !\n"
+            f"[POINTS] You are now at {(utils.formatNumber((accountPointsCounter / goalPoints) * 100))}% of your goal ({goalTitle}) !"
         )
         goalNotifier = f"🎯 Goal reached: {(utils.formatNumber((accountPointsCounter / goalPoints) * 100))}% ({goalTitle})"
 
@@ -254,12 +269,13 @@ def executeBot(currentAccount, args: argparse.Namespace):
         "Daily Points Update",
         "\n".join(
             [
-                f"👤 Account: {currentAccount.get('username')}",
+                f"👤 Account: {usernameMasked}",
                 f"⭐️ Points earned today: {utils.formatNumber(accountPointsCounter - startingPoints)}",
                 f"💰 Total points: {utils.formatNumber(accountPointsCounter)}",
                 goalNotifier,
             ]
         ),
+        appriseUrls,
     )
 
     return accountPointsCounter

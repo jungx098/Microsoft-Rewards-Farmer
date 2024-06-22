@@ -19,23 +19,19 @@ from .constants import BASE_URL
 
 
 class Utils:
-    def __init__(self, webdriver: WebDriver, config_file='config.yaml'):
+    def __init__(self, webdriver: WebDriver):
         self.webdriver = webdriver
         with contextlib.suppress(Exception):
             locale = pylocale.getdefaultlocale()[0]
             pylocale.setlocale(pylocale.LC_NUMERIC, locale)
-        
-        self.config = self.load_config(config_file)
 
     @staticmethod
-    def load_config(config_file):
-        with open(config_file, 'r') as file:
-            return yaml.safe_load(file)
+    def send_notification(title, body, urls: list = []):
+        if urls is None or len(urls) == 0:
+            return
 
-    @staticmethod
-    def send_notification(title, body, config_file='config.yaml'):
         apobj = apprise.Apprise()
-        for url in Utils.load_config(config_file)['apprise']['urls']:
+        for url in urls:
             apobj.add(url)
         apobj.notify(body=body, title=title)
 
@@ -295,3 +291,19 @@ class Utils:
         configFile = sessionPath.joinpath("config.json")
         with open(configFile, "w") as f:
             json.dump(config, f)
+
+    @staticmethod
+    def maskUsername(username: str):
+        tokens = username.split("@")
+        id = tokens[0]
+        domain = tokens[1].split(".")
+        return (
+            id[0]
+            + "******"
+            + id[-1]
+            + "@"
+            + domain[0][0]
+            + "******"
+            + domain[0][-1]
+            + ".***"
+        )
