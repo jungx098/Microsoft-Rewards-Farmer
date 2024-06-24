@@ -15,6 +15,7 @@ from src.utils import Utils
 
 class Searches:
     searchIdx = 0
+    searchMax = 200
     searchTerms: list[str] = []
 
     def __init__(self, browser: Browser):
@@ -23,8 +24,14 @@ class Searches:
 
     def getGoogleTrends(self, wordsCount: int) -> list:
         # Function to retrieve Google Trends search terms
+        Searches.searchMax = max(Searches.searchMax, wordsCount * 2)
+
+        if len(Searches.searchTerms) < Searches.searchIdx + wordsCount:
+            Searches.searchIdx = 0
+            Searches.searchTerms = []
+
         i = 0
-        while len(Searches.searchTerms) < 100 and i < 15:
+        while len(Searches.searchTerms) < Searches.searchMax:
             i += 1
             # Fetching daily trends from Google Trends API
             r = requests.get(
@@ -40,14 +47,6 @@ class Searches:
                     for relatedTopic in topic["relatedQueries"]
                 )
             Searches.searchTerms = list(set(Searches.searchTerms))
-
-        if Searches.searchIdx + wordsCount > len(Searches.searchTerms):
-            logging.warning(
-                "[BING] Not enough search terms left (Current: %d Total: %d Budget: %d)",
-                wordsCount,
-                Searches.searchIdx + wordsCount,
-                len(Searches.searchTerms),
-            )
 
         start = Searches.searchIdx
         end = min(len(Searches.searchTerms), Searches.searchIdx + wordsCount)
