@@ -212,7 +212,10 @@ def executeBot(currentAccount, args: argparse.Namespace):
         logging.info(
             f"[POINTS] You have {utils.formatNumber(accountPointsCounter)} points on your account"
         )
-        ReadToEarn(desktopBrowser).completeReadToEarn(startingPoints)
+
+        # ReadToEarn is disabled for further test as it does not use webdriver.
+        # ReadToEarn(desktopBrowser).completeReadToEarn(startingPoints)
+
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
         MorePromotions(desktopBrowser).completeMorePromotions()
