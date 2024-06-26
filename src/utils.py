@@ -7,6 +7,7 @@ import urllib.parse
 from pathlib import Path
 
 import requests
+from selenium.common.exceptions import JavascriptException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as ec
@@ -154,7 +155,12 @@ class Utils:
         return str(t)
 
     def getDashboardData(self) -> dict:
-        return self.webdriver.execute_script("return dashboard")
+        script = "return dashboard"
+        try:
+            return self.webdriver.execute_script(script)
+        except JavascriptException:
+            self.goHome()
+            return self.webdriver.execute_script(script)
 
     def getBingInfo(self):
         cookieJar = self.webdriver.get_cookies()
