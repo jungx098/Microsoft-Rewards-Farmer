@@ -25,9 +25,7 @@ if [ "$(uname)" = "Darwin" ]; then
     echo Mac OS X platform
     SHUF="/opt/local/bin/gshuf"
     NOSLEEP="pmset noidle"
-
-    # python3.12 selenium-wire has a dependency issue for blinker.
-    PYTHON=python3.11
+    PYTHON=python3
     :
 elif [ "$(expr substr $(uname -s) 1 5)" = "Linux" ]; then
     # GNU/Linux platform
@@ -89,7 +87,7 @@ sleep $DURATION
 #==============================================================================
 # Main
 #==============================================================================
-$PYTHON main.py $2
+$PYTHON m5farmer.py $2
 
 #==============================================================================
 # Housekeeping
