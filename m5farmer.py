@@ -220,6 +220,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
         PunchCards(desktopBrowser).completePunchCards()
         MorePromotions(desktopBrowser).completeMorePromotions()
         # VersusGame(desktopBrowser).completeVersusGame()
+        accountPointsCounter = utils.getBingAccountPoints()
         (remainingSearches, _) = utils.getRemainingSearches()
 
         # Introduce random pauses before and after searches
@@ -254,7 +255,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
 
         if remainingSearches > 0:
             accountPointsCounter = Searches(mobileBrowser).bingSearches(
-                remainingSearchesM, int(accountPointsCounter)
+                remainingSearches, int(accountPointsCounter)
             )
             time.sleep(random.uniform(5, 10))
 
