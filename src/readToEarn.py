@@ -17,35 +17,35 @@ client_id = '0000000040170455'
 authorization_base_url = 'https://login.live.com/oauth20_authorize.srf'
 token_url = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
 redirect_uri = ' https://login.live.com/oauth20_desktop.srf'
-scope = [ "service::prod.rewardsplatform.microsoft.com::MBI_SSL"]
+scope = ["service::prod.rewardsplatform.microsoft.com::MBI_SSL"]
 
 class ReadToEarn:
     def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
         self.activities = Activities(browser)
-    
-    def completeReadToEarn(self,startingPoints):
-        
+
+    def completeReadToEarn(self, startingPoints):
+
         logging.info("[READ TO EARN] " + "Trying to complete Read to Earn...")
-           
+
         accountName = self.browser.username
-        
+
         # Should Really Cache Token and load it in.
         # To Save token
-        #with open('token.pickle', 'wb') as f:
+        # with open('token.pickle', 'wb') as f:
         #    pickle.dump(token, f)
         # To Load token
-        #with open('token.pickle', 'rb') as f:
+        # with open('token.pickle', 'rb') as f:
         #   token = pickle.load(f)
-        #mobileApp = OAuth2Session(client_id, scope=scope, token=token)
-        
+        # mobileApp = OAuth2Session(client_id, scope=scope, token=token)
+
         # Use Webdriver to get OAuth2 Token
         # This works, since you already logged into Bing, so no user interaction needed
-        
+
         mobileApp = OAuth2Session(client_id, scope=scope, redirect_uri=redirect_uri)
         authorization_url, state = mobileApp.authorization_url(authorization_base_url, access_type="offline_access", login_hint=accountName)
-        
+
         # Get Referer URL from webdriver
         self.webdriver.get(authorization_url)
         while True:
@@ -54,11 +54,11 @@ class ReadToEarn:
                 redirect_response = self.webdriver.current_url
                 break
             time.sleep(1)
-            
+
         logging.info("[READ TO EARN] Logged-in successfully !")
         # Use returned URL to create a token
         token = mobileApp.fetch_token(token_url, authorization_response=redirect_response,include_client_id=True)
-        
+
         # json data to confirm an article is read
         json_data = {
             'amount': 1,
@@ -67,8 +67,8 @@ class ReadToEarn:
             'type': 101,
             'attributes': {
                 'offerid': 'ENUS_readarticle3_30points',
-                },
-            }
+            },
+        }
 
         balance = startingPoints
         # 10 is the most articles you can read. Sleep time is a guess, not tuned
@@ -81,8 +81,10 @@ class ReadToEarn:
                 logging.info("[READ TO EARN] Read All Available Articles !")
                 break
             else:
-                logging.info("[READ TO EARN] Read Article " + str(i+1))
+                logging.info("[READ TO EARN] Read Article " + str(i + 1))
                 balance = newbalance
                 time.sleep(random.randint(10, 20))
-        
-        logging.info("[READ TO EARN] Completed the Read to Earn successfully !") 
+
+        logging.info("[READ TO EARN] Completed the Read to Earn successfully !")
+
+        return balance
