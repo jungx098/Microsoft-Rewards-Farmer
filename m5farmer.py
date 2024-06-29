@@ -185,7 +185,6 @@ def executeBot(currentAccount, args: argparse.Namespace):
 
     accountPointsCounter = 0
     remainingSearches = 0
-    remainingSearchesM = 0
     startingPoints = 0
     goalPoints = 0
     goalTitle = ""
