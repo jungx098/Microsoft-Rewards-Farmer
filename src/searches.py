@@ -96,6 +96,8 @@ class Searches:
             )
 
             points = self.bingSearch(word)
+
+            # Adjust numberOfSearches and retry if necessary
             if points <= pointsCounter:
                 # Refresh browser
                 self.webdriver.refresh()
@@ -115,34 +117,33 @@ class Searches:
                     numberOfSearches,
                 )
 
-                if reward_cnt == numberOfSearches:
-                    break
+                if reward_cnt < numberOfSearches:
+                    retryMax = 3
+                    relatedTerms = self.getRelatedTerms(word)
+                    retryMax = min(retryMax, len(relatedTerms))
 
-                retryMax = 3
-                relatedTerms = self.getRelatedTerms(word)
-                retryMax = min(retryMax, len(relatedTerms))
+                    if retryMax == 0:
+                        logging.warning("No Related Term Found. No Retry!")
 
-                if retryMax == 0:
-                    logging.warning("No Related Term Found. No Retry!")
+                    for retry in range(retryMax):
+                        term = relatedTerms[retry]
+                        logging.info(
+                            "[BING] Retry: %d/%d Word: %s (points: %d)",
+                            retry + 1,
+                            retryMax,
+                            term,
+                            points,
+                        )
+                        points = self.bingSearch(term)
+                        if points > pointsCounter:
+                            break
 
-                for retry in range(retryMax):
-                    term = relatedTerms[retry]
-                    logging.info(
-                        "[BING] Retry: %d/%d Word: %s (points: %d)",
-                        retry + 1,
-                        retryMax,
-                        term,
-                        points,
-                    )
-                    points = self.bingSearch(term)
-                    if not points <= pointsCounter:
-                        break
+                    if points <= pointsCounter:
+                        logging.warning("[BING] No point gained (points: %d).", points)
 
             if points > pointsCounter:
                 pointsCounter = points
                 reward_cnt += 1
-            elif points == pointsCounter:
-                logging.warning("[BING] No point gained (points: %d).", points)
             else:
                 logging.warning(
                     "[BING] Invalid point returned (points: %d).",
