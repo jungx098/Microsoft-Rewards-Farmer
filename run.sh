@@ -48,8 +48,8 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     PYTHON=/cygdrive/c/Python311/python
 fi
 
-# Random sleep duration in seconds between 0 and 1200 (20 mins)
-DURATION=$($SHUF -i 0-1200 -n 1)
+# Random sleep duration in seconds between 0 and 1200 (90 mins)
+DURATION=$($SHUF -i 0-5400 -n 1)
 
 if [ -n "$1" ]; then
     DURATION="$1"
