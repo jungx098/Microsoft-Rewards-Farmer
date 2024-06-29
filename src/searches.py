@@ -115,11 +115,20 @@ class Searches:
                     points = self.bingSearch(term)
                     if not points <= pointsCounter:
                         break
+
             if points > pointsCounter:
                 pointsCounter = points
                 reward_cnt += 1
             elif points == pointsCounter:
                 logging.warning("[BING] No point gained (points: %d).", points)
+                (desktopSearchCnt, mobileSearchCnt) = (
+                    self.browser.utils.getRemainingSearches()
+                )
+
+                if self.browser.mobile is False:
+                    numberOfSearches = reward_cnt + desktopSearchCnt
+                else:
+                    numberOfSearches = reward_cnt + mobileSearchCnt
             else:
                 logging.warning(
                     "[BING] Invalid point returned (points: %d).",
