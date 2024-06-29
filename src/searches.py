@@ -94,16 +94,38 @@ class Searches:
                 numberOfSearches,
                 word,
             )
+
             points = self.bingSearch(word)
             if points <= pointsCounter:
-                relatedTerms = self.getRelatedTerms(word)
-                retryMax = min(3, len(relatedTerms))
-                for retry in range(retryMax):
-                    logging.warning(
-                        "[BING] Possible blockage. Refreshing the page.",
-                    )
-                    self.webdriver.refresh()
+                # Refresh browser
+                self.webdriver.refresh()
 
+                # Update remaining points and update numberOfSearches
+                (desktopSearchCnt, mobileSearchCnt) = (
+                    self.browser.utils.getRemainingSearches()
+                )
+
+                if self.browser.mobile is False:
+                    numberOfSearches = reward_cnt + desktopSearchCnt
+                else:
+                    numberOfSearches = reward_cnt + mobileSearchCnt
+
+                logging.info(
+                    "[BING] No Point Gained. numberOfSearches Adjust: %d.",
+                    numberOfSearches,
+                )
+
+                if reward_cnt == numberOfSearches:
+                    break
+
+                retryMax = 3
+                relatedTerms = self.getRelatedTerms(word)
+                retryMax = min(retryMax, len(relatedTerms))
+
+                if retryMax == 0:
+                    logging.warning("No Related Term Found. No Retry!")
+
+                for retry in range(retryMax):
                     term = relatedTerms[retry]
                     logging.info(
                         "[BING] Retry: %d/%d Word: %s (points: %d)",
@@ -121,14 +143,6 @@ class Searches:
                 reward_cnt += 1
             elif points == pointsCounter:
                 logging.warning("[BING] No point gained (points: %d).", points)
-                (desktopSearchCnt, mobileSearchCnt) = (
-                    self.browser.utils.getRemainingSearches()
-                )
-
-                if self.browser.mobile is False:
-                    numberOfSearches = reward_cnt + desktopSearchCnt
-                else:
-                    numberOfSearches = reward_cnt + mobileSearchCnt
             else:
                 logging.warning(
                     "[BING] Invalid point returned (points: %d).",
