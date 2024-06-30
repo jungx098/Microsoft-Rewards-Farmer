@@ -97,12 +97,13 @@ class Searches:
 
             points = self.bingSearch(word)
 
-            # Adjust numberOfSearches and retry if necessary
+            # Adjust numberOfSearches and retry if necessary.
             if points <= pointsCounter:
-                # Refresh browser
+                # Refresh browser.
                 self.webdriver.refresh()
 
-                # Update remaining points and update numberOfSearches
+                # Go to reward page and update remaining points and
+                # numberOfSearches.
                 (desktopSearchCnt, mobileSearchCnt) = (
                     self.browser.utils.getRemainingSearches()
                 )
@@ -116,6 +117,9 @@ class Searches:
                     "[BING] No Point Gained. numberOfSearches Adjust: %d.",
                     numberOfSearches,
                 )
+
+                # Go back to home search page.
+                self.webdriver.get("https://bing.com")
 
                 if reward_cnt < numberOfSearches:
                     retryMax = 3
@@ -194,7 +198,8 @@ class Searches:
                     )
                     return self.browser.utils.getBingAccountPoints()
 
-                self.webdriver.refresh()
+                # Go back to home search page.
+                self.webdriver.get("https://bing.com")
                 self.browser.utils.tryDismissAllMessages()
                 logging.error("[BING] " + "Timeout, retrying in 5~ seconds...")
                 time.sleep(Utils.randomSeconds(7, 15))
