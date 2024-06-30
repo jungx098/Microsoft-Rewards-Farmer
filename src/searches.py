@@ -118,8 +118,11 @@ class Searches:
                     numberOfSearches,
                 )
 
+                time.sleep(random.uniform(5, 10))
+
                 # Go back to home search page.
                 self.webdriver.get("https://bing.com")
+                time.sleep(random.uniform(5, 10))
 
                 if reward_cnt < numberOfSearches:
                     retryMax = 3
