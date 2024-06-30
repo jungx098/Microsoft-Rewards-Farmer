@@ -82,7 +82,9 @@ git fetch
 git rebase
 
 # Run main script after random delay seconds.
+echo Sleep for "$DURATION" secs.
 sleep $DURATION
+
 
 #==============================================================================
 # Main
