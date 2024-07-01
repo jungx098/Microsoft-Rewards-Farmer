@@ -99,11 +99,9 @@ class Searches:
 
             # Adjust numberOfSearches and retry if necessary.
             if points <= pointsCounter:
-                # Refresh browser.
-                self.webdriver.refresh()
-
                 # Go to reward page and update remaining points and
                 # numberOfSearches.
+                self.browser.utils.goHome()
                 (desktopSearchCnt, mobileSearchCnt) = (
                     self.browser.utils.getRemainingSearches()
                 )
@@ -120,8 +118,8 @@ class Searches:
 
                 time.sleep(random.uniform(5, 10))
 
-                # Go back to home search page.
-                self.webdriver.get("https://bing.com")
+                # Go back to search result.
+                self.webdriver.execute_script("window.history.go(-1)")
                 time.sleep(random.uniform(5, 10))
 
                 if reward_cnt < numberOfSearches:
@@ -151,7 +149,7 @@ class Searches:
             if points > pointsCounter:
                 pointsCounter = points
                 reward_cnt += 1
-            else:
+            elif points < pointsCounter:
                 logging.warning(
                     "[BING] Invalid point returned (points: %d).",
                     points,
