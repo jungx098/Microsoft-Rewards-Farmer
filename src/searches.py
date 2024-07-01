@@ -128,7 +128,7 @@ class Searches:
                     retryMax = min(retryMax, len(relatedTerms))
 
                     if retryMax == 0:
-                        logging.warning("No Related Term Found. No Retry!")
+                        logging.warning("[BING] No Related Term Found. No Retry!")
 
                     for retry in range(retryMax):
                         term = relatedTerms[retry]

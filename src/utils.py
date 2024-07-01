@@ -15,6 +15,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 import apprise
 import yaml
+import logging
 
 from .constants import BASE_URL
 
@@ -159,6 +160,7 @@ class Utils:
         try:
             return self.webdriver.execute_script(script)
         except JavascriptException:
+            logging.warning("getDashboardData Error. Go to home and try again!")
             self.goHome()
             return self.webdriver.execute_script(script)
 
@@ -204,7 +206,7 @@ class Utils:
             (By.ID, "idSIButton9"),
             (By.CSS_SELECTOR, ".ms-Button.ms-Button--primary"),
             (By.ID, "bnp_btn_accept"),
-            (By.ID, "acceptButton")
+            (By.ID, "acceptButton"),
         ]
         result = False
         for button in buttons:
