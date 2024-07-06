@@ -176,6 +176,9 @@ def setupAccounts() -> list:
 
 
 def executeBot(currentAccount, args: argparse.Namespace):
+
+    start_time = time.time()
+
     logging.info(
         f"********************{currentAccount.get('username', '')}********************"
     )
@@ -275,6 +278,11 @@ def executeBot(currentAccount, args: argparse.Namespace):
         )
         goalNotifier = f"🎯 Goal reached: {(utils.formatNumber((accountPointsCounter / goalPoints) * 100))}% ({goalTitle})"
 
+    end_time = time.time()
+    processing_time = end_time - start_time
+
+    logging.info("Processing Time %.3f secs", processing_time)
+
     Utils.send_notification(
         "Daily Points Update",
         "\n".join(
@@ -282,6 +290,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
                 f"👤 Account: {usernameMasked}",
                 f"⭐️ Points earned today: {utils.formatNumber(accountPointsCounter - startingPoints)}",
                 f"💰 Total points: {utils.formatNumber(accountPointsCounter)}",
+                f"⏱️ Processing time: {processing_time:.3f} secs",
                 goalNotifier,
             ]
         ),
