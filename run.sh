@@ -2,6 +2,12 @@
 
 PATH=/usr/local/bin:$PATH
 
+# Max Processing Time: 5000 + 15000 secs = 5.56 hours
+#   MAX_DELAY_TIME: 5000 secs = 1.39 hours
+#   MAX_PROCESS_TIME: 15000 secs = 4.17 hours
+MAX_DELAY_TIME=5000
+MAX_PROCESS_TIME=15000
+
 #==============================================================================
 # Greeting
 #==============================================================================
@@ -48,8 +54,8 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     PYTHON=/cygdrive/c/Python311/python
 fi
 
-# Random sleep duration in seconds between 0 and 1200 (90 mins)
-DURATION=$($SHUF -i 0-5400 -n 1)
+# Random sleep duration in seconds
+DURATION=$($SHUF -i 0-$MAX_DELAY_TIME -n 1)
 
 if [ -n "$1" ]; then
     DURATION="$1"
@@ -88,9 +94,8 @@ sleep $DURATION
 
 #==============================================================================
 # Main
-# Timeout in 15000 secs (about 4 hours)
 #==============================================================================
-timeout 15000 $PYTHON m5farmer.py $2
+timeout $MAX_PROCESS_TIME $PYTHON m5farmer.py $2
 
 #==============================================================================
 # Housekeeping
