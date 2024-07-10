@@ -1,10 +1,14 @@
+import logging
 import random
 import time
+from typing import Optional
 
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
 from src.utils import Utils
+
+logger = logging.getLogger(__name__)
 
 
 class Activities:
@@ -28,9 +32,47 @@ class Activities:
         ).click()
         self.browser.utils.switchToNewTab(8)
 
-    def completeSearch(self):
+    def completeSearch(self, search_hint: Optional[str] = None):
+        # Check search box element value. If this element was empty, Bing might
+        # want to fill the box.
+        search: Optional[str] = None
+        try:
+            search_box = self.webdriver.find_element(By.ID, "sb_form_q")
+            search = search_box.get_attribute("value")
+            logger.info("sb_form_q Value: %s", search)
+        except Exception as e:
+            logger.error("%s: No Element Found for sb_form_q", type(e).__name__)
+
+        if search_hint and search == "":
+            search_hint = search_hint.lower()
+
+            if "convert your money" in search_hint:
+                search = f"USD {random.randint(1, 10) * 100} to EURO?"
+            elif "cook tonight" in search_hint:
+                logger.warning("Not Implemented Yet: %s", search_hint)
+            elif "new recipe" in search_hint:
+                logger.warning("Not Implemented Yet: %s", search_hint)
+            else:
+                logger.warning("Not Implemented Yet: %s", search_hint)
+
+            if search != "":
+                try:
+                    logger.info("Search: %s", search)
+                    element = self.browser.utils.waitUntilClickable(
+                        By.ID, "sb_form_q", timeToWait=20
+                    )
+
+                    element.click()
+                    element.send_keys(search)
+
+                    time.sleep(random.randint(5, 10))
+                    element.submit()
+                except Exception as e:
+                    logger.error("%s: Search Error", type(e).__name__)
+
         # Simulate completing a search activity
         time.sleep(Utils.randomSeconds(10, 15))
+
         self.browser.utils.closeCurrentTab()
 
     def completeSurvey(self):

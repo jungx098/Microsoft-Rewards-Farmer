@@ -87,7 +87,7 @@ def log_daily_points_to_csv(date, earned_points, points_difference):
 
 
 def setupLogging():
-    format = "%(asctime)s [%(levelname)s] %(message)s"
+    format = "%(asctime)s %(levelname)-8s %(name)-16s %(message)s"
     terminalHandler = logging.StreamHandler(sys.stdout)
     terminalHandler.setFormatter(ColoredFormatter(format))
 

@@ -4,6 +4,8 @@ from src.browser import Browser
 
 from .activities import Activities
 
+logger = logging.getLogger(__name__)
+
 
 class MorePromotions:
     def __init__(self, browser: Browser):
@@ -19,6 +21,15 @@ class MorePromotions:
         for promotion in morePromotions:
             try:
                 i += 1
+                logger.info(
+                    '%d: "%s" (%s) DONE(%d) POINT(%d)',
+                    i,
+                    promotion["title"],
+                    promotion["promotionType"],
+                    promotion["complete"],
+                    promotion["pointProgressMax"],
+                )
+
                 if (
                     promotion["complete"] is False
                     and promotion["pointProgressMax"] != 0
@@ -27,7 +38,7 @@ class MorePromotions:
                     self.activities.openMorePromotionsActivity(i)
                     if promotion["promotionType"] == "urlreward":
                         # Complete search for URL reward
-                        self.activities.completeSearch()
+                        self.activities.completeSearch(promotion["title"])
                     elif (
                         promotion["promotionType"] == "quiz"
                         and promotion["pointProgress"] == 0
@@ -41,7 +52,7 @@ class MorePromotions:
                             self.activities.completeThisOrThat()
                     else:
                         # Default to completing search
-                        self.activities.completeSearch()
+                        self.activities.completeSearch(promotion["title"])
             except Exception:  # pylint: disable=broad-except
                 # Reset tabs in case of an exception
                 self.browser.utils.resetTabs()
