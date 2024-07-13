@@ -51,7 +51,7 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     SHUF="shuf"
     NOSLEEP="/opt/local/bin/nosleep.sh"
     unset TZ
-    PYTHON=/cygdrive/c/Python311/python
+    PYTHON=$LOCALAPPDATA/Programs/Python/Python312/python
 fi
 
 # Random sleep duration in seconds
