@@ -252,6 +252,10 @@ def executeBot(currentAccount, args: argparse.Namespace):
         )
         time.sleep(random.uniform(5, 10))
 
+        # Go back home to get search counts.
+        utils.goHome()
+        time.sleep(random.uniform(5, 10))
+
         (_, remainingSearches) = utils.getRemainingSearches()
         time.sleep(random.uniform(5, 10))
 
