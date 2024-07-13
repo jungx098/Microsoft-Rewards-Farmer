@@ -52,6 +52,9 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     NOSLEEP="/opt/local/bin/nosleep.sh"
     unset TZ
     PYTHON=$LOCALAPPDATA/Programs/Python/Python312/python
+
+    # Enable the Python UTF-8 Mode.
+    export PYTHONUTF8=1
 fi
 
 # Random sleep duration in seconds
