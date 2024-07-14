@@ -47,30 +47,50 @@ class Activities:
             search_hint = search_hint.lower()
 
             if "convert your money" in search_hint:
-                search = f"USD {random.randint(1, 10) * 100} to EURO?"
+                search_samples = [
+                    "USD 100 to KRW",
+                    "KRW 1000 to USD",
+                    "USD 1000 to YEN",
+                    "1000 USD to EURO?",
+                ]
+
+                search = random.choice(search_samples)
             elif "cook tonight" in search_hint:
-                logger.warning("Not Implemented Yet: %s", search_hint)
+                search_samples = [
+                    "Pizza near me",
+                    "Burrito near me",
+                    "Bagel near me",
+                    "Hawaiian Pizza Recipe",
+                    "Juicy Lucy Recipe",
+                ]
+
+                search = random.choice(search_samples)
             elif "new recipe" in search_hint:
-                logger.warning("Not Implemented Yet: %s", search_hint)
+                search_samples = [
+                    "Hawaiian Pizza Recipe",
+                    "Juicy Lucy Recipe",
+                ]
+
+                search = random.choice(search_samples)
             else:
                 logger.warning("Not Implemented Yet: %s", search_hint)
 
-            search_samples = [
-                "USD 100 to KRW",
-                "KRW 1000 to USD",
-                "USD 1000 to YEN",
-                "AUS to ICN flight",
-                "AUS to SFO flight",
-                "SFO to HND flight",
-                "Pizza near me",
-                "Burrito near me",
-                "Bagel near me",
-                "Hawaiian Pizza Recipe",
-                "Juicy Lucy Recipe",
-            ]
+                search_samples = [
+                    "USD 100 to KRW",
+                    "KRW 1000 to USD",
+                    "USD 1000 to YEN",
+                    "1000 USD to EURO?",
+                    "AUS to ICN flight",
+                    "AUS to SFO flight",
+                    "SFO to HND flight",
+                    "Pizza near me",
+                    "Burrito near me",
+                    "Bagel near me",
+                    "Hawaiian Pizza Recipe",
+                    "Juicy Lucy Recipe",
+                ]
 
-            search_sample_idx = random.randint(0, len(search_samples) - 1)
-            search = search_samples[search_sample_idx]
+                search = random.choice(search_samples)
 
             try:
                 logger.info("Search: %s", search)

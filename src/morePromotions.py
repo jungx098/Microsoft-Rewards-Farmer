@@ -22,9 +22,10 @@ class MorePromotions:
             try:
                 i += 1
                 logger.info(
-                    '%d: "%s" (%s) DONE(%d) POINT(%d)',
+                    '%d: "%s" %s (%s) DONE(%d) POINT(%d)',
                     i,
                     promotion["title"],
+                    promotion["description"],
                     promotion["promotionType"],
                     promotion["complete"],
                     promotion["pointProgressMax"],
