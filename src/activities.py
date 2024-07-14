@@ -55,20 +55,36 @@ class Activities:
             else:
                 logger.warning("Not Implemented Yet: %s", search_hint)
 
-            if search != "":
-                try:
-                    logger.info("Search: %s", search)
-                    element = self.browser.utils.waitUntilClickable(
-                        By.ID, "sb_form_q", timeToWait=20
-                    )
+            search_samples = [
+                "USD 100 to KRW",
+                "KRW 1000 to USD",
+                "USD 1000 to YEN",
+                "AUS to ICN flight",
+                "AUS to SFO flight",
+                "SFO to HND flight",
+                "Pizza near me",
+                "Burrito near me",
+                "Bagel near me",
+                "Hawaiian Pizza Recipe",
+                "Juicy Lucy Recipe",
+            ]
 
-                    element.click()
-                    element.send_keys(search)
+            search_sample_idx = random.randint(0, len(search_samples) - 1)
+            search = search_samples[search_sample_idx]
 
-                    time.sleep(random.randint(5, 10))
-                    element.submit()
-                except Exception as e:
-                    logger.error("%s: Search Error", type(e).__name__)
+            try:
+                logger.info("Search: %s", search)
+                element = self.browser.utils.waitUntilClickable(
+                    By.ID, "sb_form_q", timeToWait=20
+                )
+
+                element.click()
+                element.send_keys(search)
+
+                time.sleep(random.randint(5, 10))
+                element.submit()
+            except Exception as e:
+                logger.error("%s: Search Error", type(e).__name__)
 
         # Simulate completing a search activity
         time.sleep(Utils.randomSeconds(10, 15))
