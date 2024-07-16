@@ -1,8 +1,10 @@
 import logging
 import random
 import time
+from pprint import pformat
 from typing import Optional
 
+import requests
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
@@ -15,6 +17,20 @@ class Activities:
     def __init__(self, browser: Browser):
         self.browser = browser
         self.webdriver = browser.webdriver
+
+    def getRelatedTerms(self, word: str) -> list:
+        # Function to retrieve related terms from Bing API
+        try:
+            r = requests.get(
+                f"https://api.bing.com/osjson.aspx?query={word}",
+                headers={"User-agent": self.browser.userAgent},
+                timeout=60,
+            )
+            result = set(r.json()[1])
+            result.discard(word)
+            return list(result)
+        except Exception:  # pylint: disable=broad-except
+            return []
 
     def openDailySetActivity(self, cardId: int):
         # Open the Daily Set activity for the given cardId
@@ -72,25 +88,44 @@ class Activities:
                 ]
 
                 search = random.choice(search_samples)
+            elif "weather" in search_hint:
+                relatedTerms = self.getRelatedTerms("weather")
+                relatedTerms.append("weather")
+                logger.warning(pformat(relatedTerms))
+                search = random.choice(relatedTerms)
+            elif "track" in search_hint:
+                relatedTerms = self.getRelatedTerms("track")
+                relatedTerms.append("track")
+                logger.warning(pformat(relatedTerms))
+                search = random.choice(relatedTerms)
             else:
                 logger.warning("Not Implemented Yet: %s", search_hint)
 
                 search_samples = [
-                    "USD 100 to KRW",
-                    "KRW 1000 to USD",
-                    "USD 1000 to YEN",
-                    "1000 USD to EURO?",
-                    "AUS to ICN flight",
-                    "AUS to SFO flight",
-                    "SFO to HND flight",
-                    "Pizza near me",
-                    "Burrito near me",
-                    "Bagel near me",
-                    "Hawaiian Pizza Recipe",
-                    "Juicy Lucy Recipe",
+                    "weather",
+                    "cook",
+                    "recipe",
+                    "current conversion",
+                    "pizza",
+                    "hamburger",
+                    "movie",
+                    "play",
+                    "anime",
+                    "bagel",
+                    "grocery",
+                    "juicy lucy",
+                    "package",
+                    "track",
+                    "tracking",
+                    "animal",
                 ]
 
-                search = random.choice(search_samples)
+                term = random.choice(search_samples)
+                relatedTerms = self.getRelatedTerms(term)
+                relatedTerms.append(term)
+                logger.warning(pformat(relatedTerms))
+
+                search = random.choice(relatedTerms)
 
             try:
                 logger.info("Search: %s", search)
