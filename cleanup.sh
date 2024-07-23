@@ -16,6 +16,7 @@ elif [ "$(expr substr $(uname -s) 1 10)" = "MINGW32_NT" ]; then
 
     # Killing all chrome processes can resolve WebDriverException errors.
     taskkill /f /fi "USERNAME eq $USER" /im chrome.exe
+    taskkill /f /fi "USERNAME eq $USER" /im undetected_chromedriver.exe
 elif [ "$(expr substr $(uname -s) 1  9)" = "CYGWIN_NT"  ]; then
     # Replace '+' with '\' in $USER for domain accounts.
     USER=$(echo $USER | sed 's/+/\\/g')
@@ -30,6 +31,7 @@ elif [ "$(expr substr $(uname -s) 1  9)" = "CYGWIN_NT"  ]; then
 
     # Killing all chrome processes can resolve WebDriverException errors.
     taskkill /f /fi "USERNAME eq $USER" /im chrome.exe
+    taskkill /f /fi "USERNAME eq $USER" /im undetected_chromedriver.exe
 else
     :
 fi
