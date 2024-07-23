@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+import random
+
 from keybert import KeyBERT
 
 # doc = """
@@ -34,11 +36,18 @@ kw_model = KeyBERT()
 keywords = kw_model.extract_keywords(doc)
 print(keywords)
 
-print(
-    kw_model.extract_keywords(
-        doc, keyphrase_ngram_range=(1, 2), stop_words=["bing", "search", "searching"]
-    )
+
+searches = kw_model.extract_keywords(
+    doc, keyphrase_ngram_range=(1, 2), stop_words=["bing", "search", "searching"]
 )
+
+print(searches)
+for e in searches:
+    print(e[0])
+
+term = str(random.choice(searches)[0])
+print("---")
+print(term)
 
 # print(keywords)
 # TODO: Ignore 'bing' and 'search'
