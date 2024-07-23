@@ -39,7 +39,9 @@ class MorePromotions:
                     self.activities.openMorePromotionsActivity(i)
                     if promotion["promotionType"] == "urlreward":
                         # Complete search for URL reward
-                        self.activities.completeSearch(promotion["title"])
+                        self.activities.completeSearch(
+                            promotion["title"] + " " + promotion["description"]
+                        )
                     elif (
                         promotion["promotionType"] == "quiz"
                         and promotion["pointProgress"] == 0
@@ -53,7 +55,9 @@ class MorePromotions:
                             self.activities.completeThisOrThat()
                     else:
                         # Default to completing search
-                        self.activities.completeSearch(promotion["title"])
+                        self.activities.completeSearch(
+                            promotion["title"] + " " + promotion["description"]
+                        )
             except Exception:  # pylint: disable=broad-except
                 # Reset tabs in case of an exception
                 self.browser.utils.resetTabs()

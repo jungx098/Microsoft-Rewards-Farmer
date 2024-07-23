@@ -5,6 +5,7 @@ from pprint import pformat
 from typing import Optional
 
 import requests
+from keybert import KeyBERT
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
@@ -100,27 +101,14 @@ class Activities:
                 search = random.choice(relatedTerms)
             else:
                 logger.warning("Not Implemented Yet: %s", search_hint)
+                kw_model = KeyBERT()
+                searches = kw_model.extract_keywords(
+                    search_hint,
+                    keyphrase_ngram_range=(1, 2),
+                    stop_words=["bing", "search", "searching", "earn"],
+                )
 
-                search_samples = [
-                    "weather",
-                    "cook",
-                    "recipe",
-                    "current conversion",
-                    "pizza",
-                    "hamburger",
-                    "movie",
-                    "play",
-                    "anime",
-                    "bagel",
-                    "grocery",
-                    "juicy lucy",
-                    "package",
-                    "track",
-                    "tracking",
-                    "animal",
-                ]
-
-                term = random.choice(search_samples)
+                term = str(random.choice(searches)[0])
                 relatedTerms = self.getRelatedTerms(term)
                 relatedTerms.append(term)
                 logger.warning(pformat(relatedTerms))
