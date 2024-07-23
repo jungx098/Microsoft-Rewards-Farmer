@@ -107,6 +107,7 @@ class Activities:
                     keyphrase_ngram_range=(1, 2),
                     stop_words=["bing", "search", "searching", "earn"],
                 )
+                logger.warning(pformat(searches))
 
                 term = str(random.choice(searches)[0])
                 relatedTerms = self.getRelatedTerms(term)
