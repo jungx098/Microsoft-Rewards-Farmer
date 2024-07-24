@@ -20,18 +20,9 @@ class Activities:
         self.webdriver = browser.webdriver
 
     def getRelatedTerms(self, word: str) -> list:
-        # Function to retrieve related terms from Bing API
-        try:
-            r = requests.get(
-                f"https://api.bing.com/osjson.aspx?query={word}",
-                headers={"User-agent": self.browser.userAgent},
-                timeout=60,
-            )
-            result = set(r.json()[1])
-            result.discard(word)
-            return list(result)
-        except Exception:  # pylint: disable=broad-except
-            return []
+        """Function to retrieve related terms from Bing API."""
+
+        return self.browser.utils.getRelatedTerms(word, self.browser.userAgent)
 
     def openDailySetActivity(self, cardId: int):
         # Open the Daily Set activity for the given cardId

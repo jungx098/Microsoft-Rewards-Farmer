@@ -1,13 +1,16 @@
 import contextlib
 import json
 import locale as pylocale
+import logging
 import random
 import time
 import urllib.parse
 from pathlib import Path
 from typing import Optional
 
+import apprise
 import requests
+from fake_useragent import UserAgent
 from selenium.common.exceptions import JavascriptException
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
@@ -15,11 +18,9 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.webdriver.support.wait import WebDriverWait
 
-import apprise
-import yaml
-import logging
-
 from .constants import BASE_URL
+
+logger = logging.getLogger(__name__)
 
 
 class Utils:
@@ -319,3 +320,22 @@ class Utils:
             + domain[0][-1]
             + ".***"
         )
+
+    @staticmethod
+    def getRelatedTerms(word: str, ua: str | None = None) -> list:
+        """Function to retrieve related terms from Bing API."""
+
+        if ua is None:
+            ua = UserAgent().random
+
+        try:
+            r = requests.get(
+                f"https://api.bing.com/osjson.aspx?query={word}",
+                headers={"User-agent": ua},
+                timeout=60,
+            )
+            result = set(r.json()[1])
+            result.discard(word)
+            return list(result)
+        except Exception:  # pylint: disable=broad-except
+            return []

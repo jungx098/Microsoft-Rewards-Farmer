@@ -55,18 +55,9 @@ class Searches:
         return Searches.searchTerms[start:end]
 
     def getRelatedTerms(self, word: str) -> list:
-        # Function to retrieve related terms from Bing API
-        try:
-            r = requests.get(
-                f"https://api.bing.com/osjson.aspx?query={word}",
-                headers={"User-agent": self.browser.userAgent},
-                timeout=60,
-            )
-            result = set(r.json()[1])
-            result.discard(word)
-            return list(result)
-        except Exception:  # pylint: disable=broad-except
-            return []
+        """Function to retrieve related terms from Bing API."""
+
+        return self.browser.utils.getRelatedTerms(word, self.browser.userAgent)
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
         # Function to perform Bing searches
