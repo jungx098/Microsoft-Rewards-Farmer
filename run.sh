@@ -25,6 +25,7 @@ echo "========================================================================"
 SHUF=""
 NOSLEEP=""
 PYTHON="python"
+PIP="pip"
 
 if [ "$(uname)" = "Darwin" ]; then
     # Mac OS X platform
@@ -52,6 +53,7 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     NOSLEEP="/opt/local/bin/nosleep.sh"
     unset TZ
     PYTHON=$LOCALAPPDATA/Programs/Python/Python312/python
+    PIP=$LOCALAPPDATA/Programs/Python/Python312/Scripts/pip3
 
     # Enable the Python UTF-8 Mode.
     export PYTHONUTF8=1
@@ -98,7 +100,7 @@ sleep $DURATION
 #==============================================================================
 # Main
 #==============================================================================
-$PYTHON install -r requirements.txt
+$PIP install -r requirements.txt
 timeout $MAX_PROCESS_TIME $PYTHON m5farmer.py $2
 
 #==============================================================================
