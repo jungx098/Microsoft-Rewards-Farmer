@@ -217,9 +217,6 @@ def executeBot(currentAccount, args: argparse.Namespace):
             f"[POINTS] You have {utils.formatNumber(accountPointsCounter)} points on your account"
         )
 
-        # ReadToEarn is disabled for further test as it does not use webdriver.
-        # ReadToEarn(desktopBrowser).completeReadToEarn(startingPoints)
-
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
         MorePromotions(desktopBrowser).completeMorePromotions()
@@ -249,9 +246,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
         accountPointsCounter = Login(mobileBrowser).login()
         time.sleep(random.uniform(5, 10))
 
-        accountPointsCounter = ReadToEarn(mobileBrowser).completeReadToEarn(
-            startingPoints
-        )
+        accountPointsCounter = ReadToEarn(mobileBrowser).completeReadToEarn()
         time.sleep(random.uniform(5, 10))
 
         # Go back home to get search counts.

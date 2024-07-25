@@ -214,7 +214,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
         )
 
         # ReadToEarn is disabled for further test as it does not use webdriver.
-        # ReadToEarn(desktopBrowser).completeReadToEarn(startingPoints)
+        # ReadToEarn(desktopBrowser).completeReadToEarn()
 
         DailySet(desktopBrowser).completeDailySet()
         PunchCards(desktopBrowser).completePunchCards()
