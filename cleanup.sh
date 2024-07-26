@@ -31,6 +31,7 @@ elif [ "$(expr substr $(uname -s) 1  9)" = "CYGWIN_NT"  ]; then
 
     # Killing all chrome processes can resolve WebDriverException errors.
     taskkill /f /fi "USERNAME eq $USER" /im chrome.exe
+    taskkill /f /fi "USERNAME eq $USER" /im chromedriver.exe
     taskkill /f /fi "USERNAME eq $USER" /im undetected_chromedriver.exe
 else
     :
