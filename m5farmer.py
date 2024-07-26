@@ -34,9 +34,11 @@ def main():
     previous_points_data = load_previous_points_data()
 
     for currentAccount in loadedAccounts:
+        usernameMasked = "UNDEFINED"
         try:
-            earned_points = executeBot(currentAccount, args)
             account_name = currentAccount.get("username", "")
+            usernameMasked = Utils.maskUsername(account_name)
+            earned_points = executeBot(currentAccount, args)
             previous_points = previous_points_data.get(account_name, 0)
 
             # Calculate the difference in points from the prior day
@@ -51,7 +53,7 @@ def main():
             logging.info(f"[POINTS] Data for '{account_name}' appended to the file.")
         except Exception as e:
             Utils.send_notification(
-                "⚠️ Error occurred, please check the log",
+                f"⚠️ Error occurred for {usernameMasked}, please check the log",
                 str(e),
                 currentAccount.get("apprise"),
             )
