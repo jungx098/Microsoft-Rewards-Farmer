@@ -100,8 +100,7 @@ class ReadToEarn:
                 break
             else:
                 balance = newbalance
-                logger.info("Read Article Done %d - Points: %d",
-                             i + 1, balance))
+                logger.info("Read Article Done %d - Points: %d", i + 1, balance)
                 time.sleep(random.randint(10, 20))
 
         logger.info("Completed the Read to Earn: %.2f, balance")
