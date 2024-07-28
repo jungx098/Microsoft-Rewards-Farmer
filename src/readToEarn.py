@@ -13,11 +13,14 @@ import secrets
 import time
 import random
 
+logger = logging.getLogger(__name__)
+
 client_id = '0000000040170455'
 authorization_base_url = 'https://login.live.com/oauth20_authorize.srf'
 token_url = 'https://login.microsoftonline.com/consumers/oauth2/v2.0/token'
 redirect_uri = ' https://login.live.com/oauth20_desktop.srf'
 scope = ["service::prod.rewardsplatform.microsoft.com::MBI_SSL"]
+
 
 class ReadToEarn:
     def __init__(self, browser: Browser):
@@ -73,6 +76,8 @@ class ReadToEarn:
         r = mobileApp.post("https://prod.rewardsplatform.microsoft.com/dapi/me/activities",json=json_data)
         balance = r.json().get("response").get("balance")
 
+        logger.info("Done Daily Check-in - Points: %d", balance)
+
         # json data to confirm an article is read
         json_data = {
             'amount': 1,
@@ -94,10 +99,11 @@ class ReadToEarn:
                 logging.info("[READ TO EARN] Read All Available Articles !")
                 break
             else:
-                logging.info("[READ TO EARN] Read Article " + str(i + 1))
                 balance = newbalance
+                logger.info("Read Article Done %d - Points: %d",
+                             i + 1, balance))
                 time.sleep(random.randint(10, 20))
 
-        logging.info("[READ TO EARN] Completed the Read to Earn successfully !")
+        logger.info("Completed the Read to Earn: %.2f, balance")
 
         return balance

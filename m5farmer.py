@@ -22,6 +22,8 @@ from src import (
 from src.loggingColoredFormatter import ColoredFormatter
 from src.utils import Utils
 
+logger = logging.getLogger(__name__)
+
 POINTS_COUNTER = 0
 
 
@@ -244,6 +246,7 @@ def executeBot(currentAccount, args: argparse.Namespace):
     with Browser(mobile=True, account=currentAccount, args=args) as mobileBrowser:
         utils = mobileBrowser.utils
         accountPointsCounter = Login(mobileBrowser).login()
+        logger.info("Mobile Login Done - Points: %d", accountPointsCounter)
         time.sleep(random.uniform(5, 10))
 
         accountPointsCounter = ReadToEarn(mobileBrowser).completeReadToEarn()
