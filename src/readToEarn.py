@@ -103,6 +103,6 @@ class ReadToEarn:
                 logger.info("Read Article Done %d - Points: %d", i + 1, balance)
                 time.sleep(random.randint(10, 20))
 
-        logger.info("Completed the Read to Earn: %.2f, balance")
+        logger.info("Completed the Read to Earn: %d", balance)
 
         return balance
