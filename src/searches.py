@@ -7,10 +7,11 @@ from datetime import date, timedelta
 import requests
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 
 from src.browser import Browser
 from src.utils import Utils
+
+logger = logging.getLogger(__name__)
 
 
 class Searches:
@@ -61,7 +62,7 @@ class Searches:
 
     def bingSearches(self, numberOfSearches: int, pointsCounter: int = 0):
         # Function to perform Bing searches
-        logging.info(
+        logger.info(
             "[BING] %s Search Start - Reward Count: %d Points: %d",
             self.browser.browserType.capitalize(),
             numberOfSearches,
@@ -77,7 +78,7 @@ class Searches:
         while reward_cnt < numberOfSearches and i < len(search_terms):
             word = search_terms[i]
             i = i + 1
-            logging.info(
+            logger.info(
                 "[BING] Iteration: %d/%d Progress: %d/%d Word: %s",
                 i,
                 len(search_terms),
@@ -102,7 +103,7 @@ class Searches:
                 else:
                     numberOfSearches = reward_cnt + mobileSearchCnt
 
-                logging.info(
+                logger.info(
                     "[BING] No Point Gained. numberOfSearches Adjust: %d.",
                     numberOfSearches,
                 )
@@ -110,7 +111,12 @@ class Searches:
                 time.sleep(random.uniform(5, 10))
 
                 # Go back to search result.
-                self.webdriver.execute_script("window.history.go(-1)")
+                try:
+                    self.webdriver.execute_script("window.history.go(-1)")
+                except Exception as e:
+                    logger.warning("Fail to go back. Refresh!")
+                    self.webdriver.refresh()
+
                 time.sleep(random.uniform(5, 10))
 
                 if reward_cnt < numberOfSearches:
@@ -119,11 +125,11 @@ class Searches:
                     retryMax = min(retryMax, len(relatedTerms))
 
                     if retryMax == 0:
-                        logging.warning("[BING] No Related Term Found. No Retry!")
+                        logger.warning("[BING] No Related Term Found. No Retry!")
 
                     for retry in range(retryMax):
                         term = relatedTerms[retry]
-                        logging.info(
+                        logger.info(
                             "[BING] Retry: %d/%d Word: %s (points: %d)",
                             retry + 1,
                             retryMax,
@@ -135,19 +141,19 @@ class Searches:
                             break
 
                     if points <= pointsCounter:
-                        logging.warning("[BING] No point gained (points: %d).", points)
+                        logger.warning("[BING] No point gained (points: %d).", points)
 
             if points > pointsCounter:
                 pointsCounter = points
                 reward_cnt += 1
             elif points < pointsCounter:
-                logging.warning(
+                logger.warning(
                     "[BING] Invalid point returned (points: %d).",
                     points,
                 )
                 break
 
-        logging.info(
+        logger.info(
             "[BING] %s Search Done - Iteration: %d/%d Progress: %d/%d Points: %d",
             self.browser.browserType.capitalize(),
             i,
@@ -184,7 +190,7 @@ class Searches:
                 return self.browser.utils.getBingAccountPoints()
             except TimeoutException:
                 if i == 10:
-                    logging.error(
+                    logger.error(
                         "[BING] "
                         + "Cancelling mobile searches due to too many retries."
                     )
@@ -193,7 +199,7 @@ class Searches:
                 # Go back to home search page.
                 self.webdriver.get("https://bing.com")
                 self.browser.utils.tryDismissAllMessages()
-                logging.error("[BING] " + "Timeout, retrying in 5~ seconds...")
+                logger.error("[BING] " + "Timeout, retrying in 5~ seconds...")
                 time.sleep(Utils.randomSeconds(7, 15))
                 i += 1
                 continue
