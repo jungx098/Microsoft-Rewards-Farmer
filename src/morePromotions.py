@@ -39,8 +39,9 @@ class MorePromotions:
                     self.activities.openMorePromotionsActivity(i)
                     if promotion["promotionType"] == "urlreward":
                         # Complete search for URL reward
+                        link = ". " if promotion["title"][-1].isalnum() else " "
                         self.activities.completeSearch(
-                            promotion["title"] + " " + promotion["description"]
+                            promotion["title"] + link + promotion["description"]
                         )
                     elif (
                         promotion["promotionType"] == "quiz"
@@ -55,8 +56,9 @@ class MorePromotions:
                             self.activities.completeThisOrThat()
                     else:
                         # Default to completing search
+                        link = ". " if promotion["title"][-1].isalnum() else " "
                         self.activities.completeSearch(
-                            promotion["title"] + " " + promotion["description"]
+                            promotion["title"] + link + promotion["description"]
                         )
             except Exception:  # pylint: disable=broad-except
                 # Reset tabs in case of an exception
