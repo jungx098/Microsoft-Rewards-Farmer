@@ -7,6 +7,8 @@ from selenium.webdriver.common.by import By
 
 from src.browser import Browser
 
+logger = logging.getLogger(__name__)
+
 
 class Login:
     def __init__(self, browser: Browser):
@@ -15,7 +17,7 @@ class Login:
         self.utils = browser.utils
 
     def login(self):
-        logging.info("[LOGIN] " + "Logging-in...")
+        logger.info("Logging-in...")
         self.webdriver.get(
             "https://rewards.bing.com/Signin/"
         )  # changed site to allow bypassing when M$ blocks access to login.live.com randomly
@@ -23,16 +25,19 @@ class Login:
         while True:
             try:
                 self.utils.waitUntilVisible(
-                    By.CSS_SELECTOR, 'html[data-role-name="RewardsPortal"]', 0.1
+                    By.CSS_SELECTOR, 'html[data-role-name="RewardsPortal"]', 1
                 )
                 alreadyLoggedIn = True
+                logger.info("Already Logged-in!")
                 break
             except Exception:  # pylint: disable=broad-except
                 try:
                     self.utils.waitUntilVisible(By.ID, "i0116", 10)
+                    logger.info("Found i0116!")
                     break
                 except Exception:  # pylint: disable=broad-except
                     if self.utils.tryDismissAllMessages():
+                        logger.info("All Messages Dismissed!")
                         continue
 
         if not alreadyLoggedIn:
@@ -40,19 +45,19 @@ class Login:
                 return "Locked"
         self.utils.tryDismissCookieBanner()
 
-        logging.info("[LOGIN] " + "Logged-in !")
+        logger.info("Logged-in !")
 
         self.utils.goHome()
         points = self.utils.getAccountPoints()
 
-        logging.info("[LOGIN] " + "Ensuring you are logged into Bing...")
+        logger.info("Ensuring you are logged into Bing...")
         self.checkBingLogin()
-        logging.info("[LOGIN] Logged-in successfully !")
+        logger.info("Logged-in successfully !")
         return points
 
     def executeLogin(self):
         self.utils.waitUntilVisible(By.ID, "i0116", 10)
-        logging.info("[LOGIN] " + "Entering email...")
+        logger.info("Entering email...")
         self.utils.waitUntilClickable(By.NAME, "loginfmt", 10)
         email_field = self.webdriver.find_element(By.NAME, "loginfmt")
 
@@ -69,25 +74,25 @@ class Login:
         try:
             self.enterPassword(self.browser.password)
         except Exception:  # pylint: disable=broad-except
-            logging.error("[LOGIN] " + "2FA Code required !")
+            logger.error("2FA Code required !")
             with contextlib.suppress(Exception):
                 code = self.webdriver.find_element(
                     By.ID, "idRemoteNGC_DisplaySign"
                 ).get_attribute("innerHTML")
-                logging.error(f"[LOGIN] 2FA code: {code}")
-            logging.info("[LOGIN] Press enter when confirmed on your device...")
+                logger.error(f"2FA code: {code}")
+            logger.info("Press enter when confirmed on your device...")
             input()
 
         try:
             self.utils.waitUntilVisible(
                 By.NAME, 'iProofEmail', 0.5
             )
-            logging.error('[LOGIN] Needs you to prove email')
-            logging.info('[LOGIN] Press enter when confirmed...')
+            logger.error('Needs you to prove email')
+            logger.info('Press enter when confirmed...')
             input()
         except Exception:
-            logging.info('[LOGIN] No email proof, all clear')
-        
+            logger.info('No email proof, all clear')
+
         while not (
             urllib.parse.urlparse(self.webdriver.current_url).path == "/"
             and urllib.parse.urlparse(self.webdriver.current_url).hostname
@@ -95,9 +100,9 @@ class Login:
         ):
             if urllib.parse.urlparse(self.webdriver.current_url).hostname == "rewards.bing.com":
                 self.webdriver.get("https://account.microsoft.com")
-            
+
             if "Abuse" in str(self.webdriver.current_url):
-                logging.error(f"[LOGIN] {self.browser.username} is locked")
+                logger.error(f"{self.browser.username} is locked")
                 return True
             self.utils.tryDismissAllMessages()
             time.sleep(1)
@@ -110,7 +115,7 @@ class Login:
         self.utils.waitUntilClickable(By.NAME, "passwd", 10)
         self.utils.waitUntilClickable(By.ID, "idSIButton9", 10)
 
-        logging.info("[LOGIN] " + "Writing password...")
+        logger.info("Writing password...")
 
         password_field = self.webdriver.find_element(By.NAME, "passwd")
 
