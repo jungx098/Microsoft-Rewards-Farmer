@@ -52,11 +52,20 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     SHUF="shuf"
     NOSLEEP="/opt/local/bin/nosleep.sh"
     unset TZ
+
+    if [ -z "$LOCALAPPDATA" ]; then
+        LOCALAPPDATA='C:\Users\'$LOGNAME'\AppData\Local'
+    fi
     PYTHON=$LOCALAPPDATA/Programs/Python/Python312/python
     PIP=$LOCALAPPDATA/Programs/Python/Python312/Scripts/pip3
 
     # Enable the Python UTF-8 Mode.
     export PYTHONUTF8=1
+fi
+
+if ! command -v $PYTHON &> /dev/null; then
+    echo "Command not found: $PYTHON"
+    exit 1
 fi
 
 # Random sleep duration in seconds
