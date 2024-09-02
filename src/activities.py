@@ -70,6 +70,7 @@ class Activities:
                     "Bagel near me",
                     "Hawaiian Pizza Recipe",
                     "Juicy Lucy Recipe",
+                    "Ramen near me",
                 ]
 
                 search = random.choice(search_samples)
@@ -77,6 +78,7 @@ class Activities:
                 search_samples = [
                     "Hawaiian Pizza Recipe",
                     "Juicy Lucy Recipe",
+                    "BBQ Recipe",
                 ]
 
                 search = random.choice(search_samples)
