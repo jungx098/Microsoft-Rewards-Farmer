@@ -21,8 +21,10 @@ class Login:
         self.webdriver.get(
             "https://rewards.bing.com/Signin/"
         )  # changed site to allow bypassing when M$ blocks access to login.live.com randomly
+
+        retry = 0
         alreadyLoggedIn = False
-        while True:
+        while retry < 3:
             try:
                 self.utils.waitUntilVisible(
                     By.CSS_SELECTOR, 'html[data-role-name="RewardsPortal"]', 1
@@ -32,13 +34,19 @@ class Login:
                 break
             except Exception:  # pylint: disable=broad-except
                 try:
+                    # TODO: this is waiting for ID or email input. Handle
+                    #       password input ID.
                     self.utils.waitUntilVisible(By.ID, "i0116", 10)
                     logger.info("Found i0116!")
                     break
                 except Exception:  # pylint: disable=broad-except
                     if self.utils.tryDismissAllMessages():
                         logger.info("All Messages Dismissed!")
+                        retry += 1
                         continue
+
+        if retry == 3:
+            return "Verify"
 
         if not alreadyLoggedIn:
             if isLocked := self.executeLogin():
