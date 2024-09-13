@@ -71,6 +71,8 @@ class Activities:
                     "Hawaiian Pizza Recipe",
                     "Juicy Lucy Recipe",
                     "Ramen near me",
+                    "Yummies close by",
+                    "Nearby restaurants",
                 ]
 
                 search = random.choice(search_samples)
