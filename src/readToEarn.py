@@ -51,12 +51,20 @@ class ReadToEarn:
 
         # Get Referer URL from webdriver
         self.webdriver.get(authorization_url)
-        while True:
+
+        # Try to login 3 times and return -1 if it fails.
+        retry = 0
+        while retry < 3:
             logging.info("[READ TO EARN] Waiting for Login")
             if self.webdriver.current_url[:48] == "https://login.live.com/oauth20_desktop.srf?code=":
                 redirect_response = self.webdriver.current_url
                 break
             time.sleep(1)
+
+            retry += 1
+
+        if retry == 3:
+            return -1
 
         logging.info("[READ TO EARN] Logged-in successfully !")
         # Use returned URL to create a token

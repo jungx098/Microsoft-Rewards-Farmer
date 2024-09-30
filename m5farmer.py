@@ -249,8 +249,11 @@ def executeBot(currentAccount, args: argparse.Namespace):
         logger.info("Mobile Login Done - Points: %d", accountPointsCounter)
         time.sleep(random.uniform(5, 10))
 
-        accountPointsCounter = ReadToEarn(mobileBrowser).completeReadToEarn()
+        readToEarnCounter = ReadToEarn(mobileBrowser).completeReadToEarn()
         time.sleep(random.uniform(5, 10))
+
+        if readToEarnCounter > 0:
+            accountPointsCounter = readToEarnCounter
 
         # Go back home to get search counts.
         utils.goHome()
