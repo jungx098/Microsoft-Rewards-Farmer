@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import json
 import logging
 import random
@@ -9,6 +11,7 @@ from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
 from src.browser import Browser
+from src.googleTrends import queryGenerator
 from src.utils import Utils
 
 logger = logging.getLogger(__name__)
@@ -21,7 +24,8 @@ class Searches:
 
     def __init__(self, browser: Browser):
         self.browser = browser
-        self.webdriver = browser.webdriver
+        if browser is not None:
+            self.webdriver = browser.webdriver
 
     def getGoogleTrends(self, wordsCount: int) -> list:
         # Function to retrieve Google Trends search terms
@@ -35,9 +39,12 @@ class Searches:
         while len(Searches.searchTerms) < Searches.searchMax:
             i += 1
             # Fetching daily trends from Google Trends API
-            r = requests.get(
-                f'https://trends.google.com/trends/api/dailytrends?hl={self.browser.localeLang}&ed={(date.today() - timedelta(days=i)).strftime("%Y%m%d")}&geo={self.browser.localeGeo}&ns=15'
+            query = f'https://trends.google.com/trends/api/dailytrends?hl={self.browser.localeLang}&ed={(date.today() - timedelta(days=i)).strftime("%Y%m%d")}&geo={self.browser.localeGeo}&ns=15'
+            logger.info(
+                "[BING] Get Google Trends: %s",
+                query,
             )
+            r = requests.get(query)
             trends = json.loads(r.text[6:])
             for topic in trends["default"]["trendingSearchesDays"][0][
                 "trendingSearches"
@@ -70,7 +77,7 @@ class Searches:
         )
 
         # 3 more search counts to compensate potential reward failures.
-        search_terms = self.getGoogleTrends(numberOfSearches + 3)
+        search_terms = self.getQueries(numberOfSearches + 3)
         self.webdriver.get("https://bing.com")
 
         i = 0
@@ -203,3 +210,8 @@ class Searches:
                 time.sleep(Utils.randomSeconds(7, 15))
                 i += 1
                 continue
+
+    def getQueries(self, numberOfSearches: int) -> list:
+        generator = queryGenerator()
+        queries = list(generator.generateQueries(numberOfSearches))
+        return queries
