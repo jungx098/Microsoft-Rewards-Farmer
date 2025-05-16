@@ -120,8 +120,22 @@
 > [!NOTE]
 > You may see [WARNING] in your logs - this is currently enabled for debugging and to provide in any issues you may need to open
 
+## Note
+
+### Apple Silicon MacOS
+
+undetected_chromedriver requires Rosetta 2. Install it with:
+```sh
+softwareupdate --install-rosetta
+```
+See https://github.com/ultrafunkamsterdam/undetected-chromedriver/issues/1020.
+
+### Verified Environment
+
+- Windows on ARM, Python 3.12 x64, Chrome ARM
+
 ## To Do List (When time permits or someone makes a PR)
 
 - [x] Complete "Read To Earn" (30 pts)
 - [ ] Setup flags for mobile/desktop search only
-- [ ] Setup flags to load config / save data in working directory 
+- [ ] Setup flags to load config / save data in working directory
