@@ -27,17 +27,15 @@ class Login:
         while retry < 3:
             try:
                 self.utils.waitUntilVisible(
-                    By.CSS_SELECTOR, 'html[data-role-name="RewardsPortal"]', 1
+                    By.CSS_SELECTOR, 'html[data-role-name="RewardsPortal"]', 5
                 )
                 alreadyLoggedIn = True
                 logger.info("Already Logged-in!")
                 break
             except Exception:  # pylint: disable=broad-except
                 try:
-                    # TODO: this is waiting for ID or email input. Handle
-                    #       password input ID.
-                    self.utils.waitUntilVisible(By.ID, "i0116", 10)
-                    logger.info("Found i0116!")
+                    self.utils.waitUntilVisible(By.ID, "usernameEntry", 10)
+                    logger.info("Found usernameEntry!")
                     break
                 except Exception:  # pylint: disable=broad-except
                     if self.utils.tryDismissAllMessages():
@@ -64,16 +62,15 @@ class Login:
         return points
 
     def executeLogin(self):
-        self.utils.waitUntilVisible(By.ID, "i0116", 10)
+        email_field = self.utils.waitUntilVisible(By.ID, "usernameEntry", 10)
         logger.info("Entering email...")
-        self.utils.waitUntilClickable(By.NAME, "loginfmt", 10)
-        email_field = self.webdriver.find_element(By.NAME, "loginfmt")
+        email_field.click()
 
         while True:
             email_field.send_keys(self.browser.username)
             time.sleep(3)
             if email_field.get_attribute("value") == self.browser.username:
-                self.webdriver.find_element(By.ID, "idSIButton9").click()
+                self.utils.waitUntilClickable(By.CSS_SELECTOR, "[data-testid='primaryButton']").click()
                 break
 
             email_field.clear()
@@ -101,27 +98,26 @@ class Login:
         except Exception:
             logger.info('No email proof, all clear')
 
+        # Wait until the user is redirected to the rewards.bing.com page
+        retry = 3
         while not (
             urllib.parse.urlparse(self.webdriver.current_url).path == "/"
             and urllib.parse.urlparse(self.webdriver.current_url).hostname
-            == "account.microsoft.com"
+            == "rewards.bing.com"
         ):
-            if urllib.parse.urlparse(self.webdriver.current_url).hostname == "rewards.bing.com":
-                self.webdriver.get("https://account.microsoft.com")
-
-            if "Abuse" in str(self.webdriver.current_url):
-                logger.error(f"{self.browser.username} is locked")
+            retry -= 1
+            if retry <= 0:
+                logger.error("Login failed!")
                 return True
             self.utils.tryDismissAllMessages()
             time.sleep(1)
 
         self.utils.waitUntilVisible(
-            By.CSS_SELECTOR, 'html[data-role-name="MeePortal"]', 10
+            By.CSS_SELECTOR, 'html[data-role-name="RewardsPortal"]', 10
         )
 
     def enterPassword(self, password):
         self.utils.waitUntilClickable(By.NAME, "passwd", 10)
-        self.utils.waitUntilClickable(By.ID, "idSIButton9", 10)
 
         logger.info("Writing password...")
 
@@ -131,7 +127,7 @@ class Login:
             password_field.send_keys(password)
             time.sleep(3)
             if password_field.get_attribute("value") == password:
-                self.webdriver.find_element(By.ID, "idSIButton9").click()
+                self.utils.waitUntilClickable(By.CSS_SELECTOR, "[data-testid='primaryButton']").click()
                 break
 
             password_field.clear()

@@ -40,8 +40,10 @@ class Utils:
             apobj.add(url)
         apobj.notify(body=body, title=title)
 
-    def waitUntilVisible(self, by: str, selector: str, timeToWait: float = 10):
-        WebDriverWait(self.webdriver, timeToWait).until(
+    def waitUntilVisible(
+        self, by: str, selector: str, timeToWait: float = 10
+    ) -> Optional[WebElement]:
+        return WebDriverWait(self.webdriver, timeToWait).until(
             ec.visibility_of_element_located((by, selector))
         )
 
@@ -212,6 +214,7 @@ class Utils:
             (By.CSS_SELECTOR, ".ms-Button.ms-Button--primary"),
             (By.ID, "bnp_btn_accept"),
             (By.ID, "acceptButton"),
+            (By.CSS_SELECTOR, "[data-testid='primaryButton']"),
         ]
         result = False
         for button in buttons:
