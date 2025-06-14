@@ -48,6 +48,7 @@ class Activities:
             search_box = self.webdriver.find_element(By.ID, "sb_form_q")
             search = search_box.get_attribute("value")
             logger.info("sb_form_q Value: %s", search)
+            time.sleep(Utils.randomSeconds(10, 15))
         except Exception as e:
             logger.error("%s: No Element Found for sb_form_q", type(e).__name__)
 
@@ -118,6 +119,7 @@ class Activities:
                 )
 
                 element.click()
+                element.send_keys(Keys.BACKSPACE * 50)
                 element.send_keys(search)
 
                 time.sleep(random.randint(5, 10))
