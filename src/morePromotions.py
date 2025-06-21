@@ -46,6 +46,8 @@ class MorePromotions:
                 )
                 logger.info(
                     "Card %d: %s", i, element.accessible_name)
+                logger.info(
+                    "Card %d: %s", i, element.text)
 
                 # Sequtial search for the promotion for the current card
                 promotion = None
@@ -87,7 +89,7 @@ class MorePromotions:
                             By.XPATH,
                             f'//*[@id="more-activities"]/div/mee-card[{j}]/div/card-content/mee-rewards-more-activities-card-item/div/a',
                         )
-                        if promotion["title"] in element.accessible_name:
+                        if promotion["title"] in element.text:
                             cardId = j
                             break
                     except Exception:
