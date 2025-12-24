@@ -10,8 +10,8 @@ import requests
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 
+from src import googleTrends, wikipedia
 from src.browser import Browser
-from src.googleTrends import queryGenerator
 from src.utils import Utils
 
 logger = logging.getLogger(__name__)
@@ -212,6 +212,6 @@ class Searches:
                 continue
 
     def getQueries(self, numberOfSearches: int) -> list:
-        generator = queryGenerator()
+        generator = wikipedia.queryGenerator()
         queries = list(generator.generateQueries(numberOfSearches))
         return queries
