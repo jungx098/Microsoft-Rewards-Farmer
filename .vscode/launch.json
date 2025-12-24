@@ -5,10 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Python Debugger: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal"
+    },
+    {
       "name": "Microsoft Rewards Farmer Debug",
       "type": "python",
       "request": "launch",
-      "program": "main.py",
+      "program": "m5farmer.py",
       "console": "integratedTerminal",
       "justMyCode": true
     },
@@ -16,8 +23,10 @@
       "name": "Microsoft Rewards Farmer Debug (visible browser)",
       "type": "python",
       "request": "launch",
-      "program": "main.py",
-      "args": ["-v"],
+      "program": "m5farmer.py",
+      "args": [
+        "-v"
+      ],
       "console": "integratedTerminal",
       "justMyCode": true
     }
