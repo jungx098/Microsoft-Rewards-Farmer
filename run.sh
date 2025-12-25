@@ -24,7 +24,7 @@ echo "========================================================================"
 # Platform specific commands
 SHUF=""
 NOSLEEP=""
-PYTHON="python"
+PYTHON=python
 PIP="pip"
 
 if [ "$(uname)" = "Darwin" ]; then
@@ -63,9 +63,12 @@ elif [ "$(expr substr $(uname -s) 1 9)" = "CYGWIN_NT" ]; then
     export PYTHONUTF8=1
 fi
 
-if ! command -v $PYTHON &> /dev/null; then
-    echo "Command not found: $PYTHON"
-    exit 1
+# Verify Python interpreter is available
+if ! command -v "$PYTHON" >/dev/null 2>&1; then
+    rc=$?
+    echo "Command not found: $PYTHON" >&2
+    echo "command -v exit code: $rc" >&2
+    exit $rc
 fi
 
 # Random sleep duration in seconds
