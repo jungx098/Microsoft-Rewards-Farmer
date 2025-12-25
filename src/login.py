@@ -70,7 +70,9 @@ class Login:
             email_field.send_keys(self.browser.username)
             time.sleep(3)
             if email_field.get_attribute("value") == self.browser.username:
-                self.utils.waitUntilClickable(By.CSS_SELECTOR, "[data-testid='primaryButton']").click()
+                self.utils.waitUntilClickable(
+                    By.CSS_SELECTOR, "[data-testid='primaryButton']"
+                ).click()
                 break
 
             email_field.clear()
@@ -89,14 +91,12 @@ class Login:
             input()
 
         try:
-            self.utils.waitUntilVisible(
-                By.NAME, 'iProofEmail', 0.5
-            )
-            logger.error('Needs you to prove email')
-            logger.info('Press enter when confirmed...')
+            self.utils.waitUntilVisible(By.NAME, "iProofEmail", 0.5)
+            logger.error("Needs you to prove email")
+            logger.info("Press enter when confirmed...")
             input()
         except Exception:
-            logger.info('No email proof, all clear')
+            logger.info("No email proof, all clear")
 
         # Wait until the user is redirected to the rewards.bing.com page
         retry = 3
@@ -127,18 +127,22 @@ class Login:
             password_field.send_keys(password)
             time.sleep(3)
             if password_field.get_attribute("value") == password:
-                self.utils.waitUntilClickable(By.CSS_SELECTOR, "[data-testid='primaryButton']").click()
+                self.utils.waitUntilClickable(
+                    By.CSS_SELECTOR, "[data-testid='primaryButton']"
+                ).click()
                 break
 
             password_field.clear()
             time.sleep(3)
         time.sleep(3)
 
-    def checkBingLogin(self):
+    def checkBingLogin(self, timeout_sec=60):
         self.webdriver.get(
             "https://www.bing.com/fd/auth/signin?action=interactive&provider=windows_live_id&return_url=https%3A%2F%2Fwww.bing.com%2F"
         )
-        while True:
+
+        timeout = time.time() + timeout_sec
+        while time.time() < timeout:
             currentUrl = urllib.parse.urlparse(self.webdriver.current_url)
             if currentUrl.hostname == "www.bing.com" and currentUrl.path == "/":
                 time.sleep(3)
@@ -147,3 +151,4 @@ class Login:
                     if self.utils.checkBingLogin():
                         return
             time.sleep(1)
+        raise TimeoutError("Timed out waiting for Bing login to complete.")
