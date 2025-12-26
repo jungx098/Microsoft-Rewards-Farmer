@@ -78,6 +78,31 @@ class Login:
             email_field.clear()
             time.sleep(3)
 
+        # Click "Other ways to sign in" if "Verify your email" appears
+        time.sleep(5)
+        try:
+            el = self.webdriver.find_element(
+                By.XPATH,
+                "//span[@role='button' and normalize-space(.)='Other ways to sign in']",
+            )
+            self.webdriver.execute_script("arguments[0].click();", el)
+        except Exception:  # pylint: disable=broad-except
+            pass
+
+        # Click "Use my password" if "Choose a way to sign in" appears
+        time.sleep(5)
+        try:
+            el = self.webdriver.find_element(
+                By.XPATH,
+                "//span[@role='button' and normalize-space(.)='Use your password']",
+            )
+            self.webdriver.execute_script(
+                "arguments[0].scrollIntoView({block:'center'}); arguments[0].click();",
+                el,
+            )
+        except:
+            pass
+
         try:
             self.enterPassword(self.browser.password)
         except Exception:  # pylint: disable=broad-except
