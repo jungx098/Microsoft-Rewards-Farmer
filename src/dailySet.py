@@ -33,6 +33,14 @@ class DailySet:
                 logging.info(
                     f"[DAILY SET] Activity point progress: {activity.get('pointProgress', 'unknown')}/{activity.get('pointProgressMax', 'unknown')}"
                 )
+
+                if activity["complete"] is True:
+                    logging.info(
+                        "[DAILY SET] Activity already completed, skipping: %s",
+                        activity.get("title", "unknown"),
+                    )
+                    continue
+
                 if activity["complete"] is False:
                     cardId = int(activity["offerId"][-1:])
                     # Open the Daily Set activity
@@ -42,6 +50,9 @@ class DailySet:
                         # Complete search for URL reward
                         self.activities.completeSearch()
                     if activity["promotionType"] == "quiz":
+                        logging.info(
+                            f"[DAILY SET] pointProgress / pointProgressMax: {activity['pointProgress']} / {activity['pointProgressMax']}"
+                        )
                         if (
                             activity["pointProgressMax"] == 50
                             and activity["pointProgress"] == 0
@@ -54,7 +65,6 @@ class DailySet:
                             self.activities.completeThisOrThat()
                         elif (
                             activity["pointProgressMax"] in [40, 30]
-                            and activity["pointProgress"] == 0
                         ):
                             logging.info(
                                 f"[DAILY SET] Completing 30-40 pt quiz of card {cardId}"
@@ -65,6 +75,9 @@ class DailySet:
                             activity["pointProgressMax"] == 10
                             and activity["pointProgress"] == 0
                         ):
+                            logging.info(
+                                f"[DAILY SET] Completing 10 pt quiz of card {cardId}"
+                            )
                             # Extract and parse search URL for additional checks
                             searchUrl = urllib.parse.unquote(
                                 urllib.parse.parse_qs(
@@ -98,5 +111,9 @@ class DailySet:
                                     self.activities.completeQuiz()
             except Exception:  # pylint: disable=broad-except
                 # Reset tabs in case of an exception
+                logging.exception(
+                    "[DAILY SET] An error occurred while completing activity '%s'. Skipping to next.",
+                    activity.get("title", "Unknown"),
+                )
                 self.browser.utils.resetTabs()
         logging.info("[DAILY SET] Completed the Daily Set successfully !")
