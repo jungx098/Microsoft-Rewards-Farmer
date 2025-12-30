@@ -21,6 +21,18 @@ class DailySet:
         todayDate = datetime.now().strftime("%m/%d/%Y")
         for activity in data.get(todayDate, []):
             try:
+                logging.info(
+                    f"[DAILY SET] Processing activity: {activity.get('title', 'unknown')}"
+                )
+                logging.info(
+                    f"[DAILY SET] Activity complete status: {activity.get('complete', 'unknown')}"
+                )
+                logging.info(
+                    f"[DAILY SET] Activity promotion type: {activity.get('promotionType', 'unknown')}"
+                )
+                logging.info(
+                    f"[DAILY SET] Activity point progress: {activity.get('pointProgress', 'unknown')}/{activity.get('pointProgressMax', 'unknown')}"
+                )
                 if activity["complete"] is False:
                     cardId = int(activity["offerId"][-1:])
                     # Open the Daily Set activity
@@ -45,7 +57,7 @@ class DailySet:
                             and activity["pointProgress"] == 0
                         ):
                             logging.info(
-                                f"[DAILY SET] Completing quiz of card {cardId}"
+                                f"[DAILY SET] Completing 30-40 pt quiz of card {cardId}"
                             )
                             # Complete quiz for specific point progress max
                             self.activities.completeQuiz()
@@ -76,7 +88,7 @@ class DailySet:
                                 self.activities.completeSurvey()
                             else:
                                 logging.info(
-                                    f"[DAILY SET] Completing quiz of card {cardId}"
+                                    f"[DAILY SET] Completing 10 pt quiz of card {cardId}"
                                 )
                                 try:
                                     # Try completing ABC activity
