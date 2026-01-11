@@ -56,7 +56,7 @@ class Browser:
         with contextlib.suppress(Exception):
             self.webdriver.close()
             self.webdriver.quit()
-            
+
     def browserSetup(
         self,
     ) -> WebDriver:
@@ -75,7 +75,11 @@ class Browser:
         options.add_argument("--disable-gpu")
         options.add_argument("--disable-default-apps")
         options.add_argument("--disable-features=Translate")
-        options.add_argument('--disable-features=PrivacySandboxSettings4')
+        options.add_argument("--disable-features=PrivacySandboxSettings4")
+
+        # Disable passkeys / WebAuthn UI
+        options.add_argument("--disable-features=WebAuthenticationConditionalUI")
+        options.add_argument("--disable-webauthn")
 
         seleniumwireOptions: dict[str, Any] = {"verify_ssl": False}
 
@@ -97,6 +101,9 @@ class Browser:
             user_data_dir=self.userDataDir.as_posix(),
             version_main=major,
         )
+
+        if not self.headless:
+            driver.maximize_window()
 
         seleniumLogger = logging.getLogger("seleniumwire")
         seleniumLogger.setLevel(logging.ERROR)
